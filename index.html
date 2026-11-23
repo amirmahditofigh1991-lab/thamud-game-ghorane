@@ -1886,6 +1886,76 @@
     .lb-row { padding: 9px 10px; gap: 8px; }
   }
 
+
+  /* Preview Guest Button & Teacher-Only Guest Delete Controls */
+  .preview-guest-card {
+    background: linear-gradient(135deg, rgba(29, 122, 120, 0.08), rgba(42, 127, 79, 0.10));
+    border: 1.5px dashed #4da39d;
+    border-radius: 13px;
+    padding: 8px 11px;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+  }
+  body.night-ui .preview-guest-card {
+    background: rgba(20, 52, 66, 0.65);
+    border-color: #49b8b0;
+  }
+  .lb-teacher-banner {
+    background: rgba(140, 56, 35, 0.12);
+    border: 1.5px solid #c97a58;
+    color: #7d2c19;
+    border-radius: 11px;
+    padding: 7px 11px;
+    margin-bottom: 10px;
+    font-size: 12px;
+    font-weight: 800;
+    line-height: 1.7;
+  }
+  body.night-ui .lb-teacher-banner {
+    background: rgba(140, 56, 35, 0.32);
+    border-color: #e89c78;
+    color: #ffe3d4;
+  }
+  .guest-del-btn {
+    background: #fff0ed;
+    color: #b52b1d;
+    border: 1.5px solid #e08679;
+    border-radius: 9px;
+    padding: 3px 9px;
+    font-family: inherit;
+    font-size: 11.5px;
+    font-weight: 800;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    flex-shrink: 0;
+    transition: all 0.15s ease;
+  }
+  .guest-del-btn:hover { background: #ffdcd5; transform: scale(1.03); }
+  body.night-ui .guest-del-btn {
+    background: #4d1f1c;
+    color: #ffd4cc;
+    border-color: #d97365;
+  }
+  .student-card-wrap {
+    position: relative;
+    display: flex;
+    align-items: stretch;
+  }
+  .student-card-wrap .student-btn { width: 100%; }
+  .student-card-del {
+    position: absolute;
+    top: 6px;
+    left: 6px;
+    z-index: 3;
+    padding: 2px 7px;
+    font-size: 11px;
+  }
+
   .hidden { display: none !important; }
 
   @media print {
@@ -2036,11 +2106,16 @@
     </div>
     <div id="welcome-student-grid" class="student-grid"></div>
     <div class="welcome-alt-bar">
+      <div class="preview-guest-card">
+        <span style="font-size:12.4px; font-weight:800;">👀 اولیا یا مهمان هستید و فقط می‌خواهید بازی را تست کنید؟</span>
+        <button class="secondary-btn" style="padding:6px 12px; font-size:12.4px; border-color:var(--turquoise); color:var(--turquoise-dark);" onclick="enterPreviewGuestMode()">ورود آزمایشی (بدون ثبت در لیست) ◀</button>
+      </div>
+
       <div class="guest-entry-row">
         <input type="text" id="guest-name-input" class="guest-input" maxlength="32"
-               placeholder="➕ یا نام دلخواه مسافر جدید را بنویس..."
+               placeholder="➕ افزودن هم‌کلاسی جدید به لیست کلاس..."
                onkeydown="if(event.key==='Enter') selectCustomStudent()" />
-        <button class="gold-btn" style="padding:8px 14px; font-size:13px;" onclick="selectCustomStudent()">ورود با نام دلخواه ◀</button>
+        <button class="gold-btn" style="padding:8px 14px; font-size:13px;" onclick="selectCustomStudent()">ثبت در لیست و ورود ◀</button>
       </div>
 
       <div class="teacher-entry-card">
@@ -2289,8 +2364,31 @@
       <span id="lb-sync-pill" class="cloud-status-pill syncing">🔄 در حال دریافت آخرین وضعیت...</span>
       <button class="secondary-btn" id="lb-refresh-btn" style="padding:6px 12px; font-size:12.2px;" onclick="refreshLeaderboardNow()">🔄 بروزرسانی زنده</button>
     </div>
+    <div id="lb-teacher-banner" class="lb-teacher-banner hidden">
+      🎓 حالت معلم فعال است: کنار هر اسم مهمان/اضافی دکمه <strong>«🗑️ حذف»</strong> قرار گرفته تا با یک ضربه از لیست کل کلاس پاک شود.
+    </div>
     <div class="lb-summary-grid" id="lb-summary-grid"></div>
     <div class="lb-list" id="lb-list"></div>
+  </div>
+</div>
+
+<!-- =====================================================
+     MODAL 11: TEACHER CONFIRM DELETE GUEST STUDENT
+     ===================================================== -->
+<div id="modal-confirm-delete-guest" class="modal-overlay" onclick="if(event.target===this) closeModal('modal-confirm-delete-guest')">
+  <div class="parchment-modal" style="max-width:430px; text-align:center;">
+    <div class="modal-head">
+      <h3>🗑️ حذف نام اضافی از لیست کلاس</h3>
+      <button class="modal-close" onclick="closeModal('modal-confirm-delete-guest')">×</button>
+    </div>
+    <div style="font-size:36px; margin:4px 0;">🧹</div>
+    <p id="confirm-del-guest-msg" style="font-size:14px; line-height:1.85; margin:6px 0 16px;">
+      آیا این نام از لیست و تابلوی کل کلاس پاک شود؟
+    </p>
+    <div style="display:flex; justify-content:center; gap:9px; flex-wrap:wrap;">
+      <button class="primary-btn" style="background:linear-gradient(135deg,#c94b3b,#962b1f);" onclick="executeDeleteGuestStudent()">بله، برای کل کلاس پاک شود</button>
+      <button class="secondary-btn" onclick="closeModal('modal-confirm-delete-guest')">انصراف</button>
+    </div>
   </div>
 </div>
 
@@ -2838,28 +2936,38 @@ const CloudSync = (() => {
   function ingestRecords(records) {
     if (!Array.isArray(records)) return;
     const nextMap = {};
-    let extrasChanged = false;
-    let extras = [];
-    try { extras = JSON.parse(localStorage.getItem(CUSTOM_STUDENTS_KEY) || '[]'); } catch { extras = []; }
+    const hiddenIds = new Set();
     const defaultIds = new Set(DEFAULT_STUDENTS.map(s => s.id));
+    const nextExtras = [];
+    const seenExtraIds = new Set();
 
     records.forEach(rec => {
-      if (!rec || !rec.id || !rec.name || rec.id === 'teacher') return;
+      if (!rec || !rec.id || !rec.name || rec.id === 'teacher' || rec.id === 'guest_preview') return;
+      const rid = String(rec.id);
+      if (rec.state && rec.state.hidden === true) {
+        hiddenIds.add(rid);
+        try { localStorage.removeItem(getStudentStorageKey(rid)); } catch {}
+        return;
+      }
       const normState = normalizeStudentState(rec.state);
-      nextMap[rec.id] = {
-        id: String(rec.id),
+      nextMap[rid] = {
+        id: rid,
         name: String(rec.name),
         updatedAt: String(rec.updatedAt || ''),
         state: normState
       };
-      if (!defaultIds.has(rec.id) && !extras.some(e => e.id === rec.id)) {
-        extras.push({ id: String(rec.id), name: String(rec.name), isGuest: true });
-        extrasChanged = true;
+      if (!defaultIds.has(rid) && !seenExtraIds.has(rid)) {
+        seenExtraIds.add(rid);
+        nextExtras.push({ id: rid, name: String(rec.name), isGuest: true });
       }
     });
-    if (extrasChanged) {
-      try { localStorage.setItem(CUSTOM_STUDENTS_KEY, JSON.stringify(extras)); } catch {}
+
+    // Preserve a newly-added local guest who is currently playing and hasn't finished pushing yet
+    if (currentStudent && currentStudent.isGuest && !hiddenIds.has(currentStudent.id) && !seenExtraIds.has(currentStudent.id)) {
+      nextExtras.push({ id: currentStudent.id, name: currentStudent.name, isGuest: true });
     }
+
+    try { localStorage.setItem(CUSTOM_STUDENTS_KEY, JSON.stringify(nextExtras)); } catch {}
     recordsMap = nextMap;
     persistCache();
 
@@ -2923,7 +3031,7 @@ const CloudSync = (() => {
   }
 
   function schedulePush(student, stateObj, isReset = false) {
-    if (!student || student.isTeacher || !stateObj) return;
+    if (!student || student.isTeacher || student.isPreview || !stateObj) return;
     const norm = normalizeStudentState(stateObj);
     // Optimistically update local cloud cache immediately
     const prevRec = recordsMap[student.id];
@@ -2952,11 +3060,33 @@ const CloudSync = (() => {
     }
   }
 
+  async function deleteGuest(studentId, studentName) {
+    if (!studentId || DEFAULT_STUDENTS.some(s => s.id === studentId)) return false;
+    // Remove immediately from local list & cache
+    delete recordsMap[studentId];
+    persistCache();
+    try {
+      const curExtras = JSON.parse(localStorage.getItem(CUSTOM_STUDENTS_KEY) || '[]');
+      const filtered = curExtras.filter(e => e.id !== studentId);
+      localStorage.setItem(CUSTOM_STUDENTS_KEY, JSON.stringify(filtered));
+      localStorage.removeItem(getStudentStorageKey(studentId));
+    } catch {}
+
+    // Mark hidden in Google Sheet (works cleanly with existing Apps Script!)
+    const ok = await sendPost({
+      id: studentId,
+      name: (studentName || 'مهمان') + ' (حذف‌شده)',
+      state: { hidden: true, deletedAt: Date.now() },
+      isReset: true
+    });
+    return ok;
+  }
+
   function getRecord(id) { return recordsMap[id] || null; }
   function getAllMap() { return recordsMap; }
   function getStatus() { return status; }
 
-  return { fetchAll, schedulePush, getRecord, getAllMap, getStatus, setStatus };
+  return { fetchAll, schedulePush, deleteGuest, getRecord, getAllMap, getStatus, setStatus };
 })();
 
 function loadLocalStudentState(id) {
@@ -2978,7 +3108,7 @@ function loadStudentState(id) {
 
 function saveCurrentStudentState(opts = {}) {
   if (!currentStudent || !state) return;
-  if (!currentStudent.isTeacher) {
+  if (!currentStudent.isTeacher && !currentStudent.isPreview) {
     try { localStorage.setItem(getStudentStorageKey(currentStudent.id), JSON.stringify(state)); } catch {}
     CloudSync.schedulePush(currentStudent, state, Boolean(opts.isReset));
   }
@@ -6390,7 +6520,7 @@ function updateHudAndDock() {
   if (tPill) tPill.classList.toggle('hidden', !teacherMode);
   if (tNav) tNav.classList.toggle('hidden', !teacherMode);
 
-  nameEl.textContent = teacherMode ? '🎓 حالت ارائه معلم' : `مسافر زمان: ${currentStudent.name}`;
+  nameEl.textContent = teacherMode ? '🎓 حالت ارائه معلم' : (currentStudent.isPreview ? '👀 مسافر مهمان (حالت آزمایشی)' : `مسافر زمان: ${currentStudent.name}`);
   subEl.textContent = teacherMode
     ? 'تمام ۱۰ ایستگاه برای تدریس و نمایش کلاسی باز هستند'
     : (done >= TOTAL_STATIONS ? '★ نشان اهل یقین دریافت شد' : `${toFaNum(done)} از ۱۰ ایستگاه تکمیل شده (ذخیره خودکار)`);
@@ -6410,22 +6540,81 @@ function updateHudAndDock() {
     : `▶ ورود به ایستگاه ${toFaNum(targetMeta.id)}: ${targetMeta.short}`;
 }
 
+let pendingDeleteGuest = null;
+
+function isDefaultStudentId(id) {
+  return DEFAULT_STUDENTS.some(s => s.id === id);
+}
+
+function askDeleteGuestStudent(studentId, event) {
+  if (event) event.stopPropagation();
+  if (!teacherMode || isDefaultStudentId(studentId)) return;
+  const st = getAllStudents().find(s => s.id === studentId);
+  const name = st ? st.name : 'این مسافر';
+  pendingDeleteGuest = { id: studentId, name };
+  AudioEngine.playSfx('click');
+  const msgEl = document.getElementById('confirm-del-guest-msg');
+  if (msgEl) {
+    msgEl.innerHTML = `آیا مطمئن هستید می‌خواهید نام <strong>«${escapeHtml(name)}»</strong> را از لیست و تابلوی پیشرفت کل کلاس حذف کنید؟`;
+  }
+  openModal('modal-confirm-delete-guest');
+}
+
+async function executeDeleteGuestStudent() {
+  if (!pendingDeleteGuest || !teacherMode) return;
+  const { id, name } = pendingDeleteGuest;
+  pendingDeleteGuest = null;
+  closeModal('modal-confirm-delete-guest');
+  AudioEngine.playSfx('scroll');
+  showToast(`🧹 در حال حذف «${name}» از لیست کلاس...`, 1800);
+  const ok = await CloudSync.deleteGuest(id, name);
+  renderWelcomeStudentGrid();
+  renderLeaderboardContent();
+  if (ok) {
+    AudioEngine.playSfx('correct');
+    showToast(`✅ نام «${name}» برای کل کلاس پاک شد!`, 2400);
+  } else {
+    showToast(`⚠️ از این گوشی پاک شد؛ لطفاً با اینترنت روشن دوباره بررسی کنید.`, 2600);
+  }
+}
+
+function enterPreviewGuestMode() {
+  AudioEngine.initOnFirstGesture();
+  AudioEngine.playSfx('correct');
+  teacherMode = false;
+  s10CertDownloaded = false;
+  currentStudent = { id: 'guest_preview', name: 'مسافر مهمان', isPreview: true };
+  state = getDefaultStudentState();
+  document.getElementById('modal-welcome').classList.remove('open');
+  syncBgThrottle();
+  World3D.resetWildlife();
+  World3D.jumpImmediate(1, true);
+  syncAtmosphereUI(1, true);
+  updateHudAndDock();
+  showOneTimeOnboardTip();
+  showToast('👀 خوش آمدید! در حالت آزمایشی هستید و اسمتان در لیست کلاس ثبت نمی‌شود.', 2600);
+}
+
 function renderWelcomeStudentGrid() {
   const grid = document.getElementById('welcome-student-grid');
   if (!grid) return;
   grid.innerHTML = getAllStudents().map((st, idx) => {
     const saved = loadStudentState(st.id);
+    const canDel = teacherMode && !isDefaultStudentId(st.id);
     let badge = `<span class="student-progress-tag">شروع سفر جدید</span>`;
     if (saved.finishedGame) badge = `<span class="student-progress-tag done">★ نشان اهل یقین</span>`;
     else if (saved.completedStations.length > 0) badge = `<span class="student-progress-tag">ادامه از ایستگاه ${toFaNum(saved.highestUnlocked)}</span>`;
     return `
-      <button class="student-btn" onclick="selectStudent('${st.id}')">
-        <span class="student-num">${toFaNum(idx + 1)}</span>
-        <div>
-          <span class="student-name">${escapeHtml(st.name)}</span>
-          ${badge}
-        </div>
-      </button>`;
+      <div class="student-card-wrap">
+        <button class="student-btn" onclick="selectStudent('${st.id}')">
+          <span class="student-num">${toFaNum(idx + 1)}</span>
+          <div>
+            <span class="student-name">${escapeHtml(st.name)}</span>
+            ${badge}
+          </div>
+        </button>
+        ${canDel ? `<button class="guest-del-btn student-card-del" onclick="askDeleteGuestStudent('${st.id}', event)" title="حذف این نام اضافی از لیست کل کلاس">🗑️</button>` : ''}
+      </div>`;
   }).join('');
 }
 
@@ -6459,7 +6648,9 @@ function refreshLeaderboardNow() {
 function renderLeaderboardContent() {
   const sumEl = document.getElementById('lb-summary-grid');
   const listEl = document.getElementById('lb-list');
+  const tBanner = document.getElementById('lb-teacher-banner');
   if (!sumEl || !listEl) return;
+  if (tBanner) tBanner.classList.toggle('hidden', !teacherMode);
 
   const allStudents = getAllStudents();
   const rows = allStudents.map((st, origIdx) => {
@@ -6533,6 +6724,10 @@ function renderLeaderboardContent() {
         : '<span class="lb-status-badge idle">هنوز شروع نکرده</span>');
 
     const timeHtml = r.updatedAt ? `<span>🕒 ${toFaNum(r.updatedAt)}</span>` : '';
+    const isGuestRow = !isDefaultStudentId(r.id);
+    const delBtnHtml = (teacherMode && isGuestRow)
+      ? `<button class="guest-del-btn" onclick="askDeleteGuestStudent('${r.id}', event)" title="حذف این نام از لیست کل کلاس">🗑️ حذف</button>`
+      : '';
 
     return `
       <div class="lb-row ${r.finishedGame ? 'lb-finished' : ''} ${isMe ? 'lb-me' : ''}">
@@ -6540,7 +6735,10 @@ function renderLeaderboardContent() {
         <div class="lb-info">
           <div class="lb-head-line">
             <span class="lb-name">${escapeHtml(r.name)}${isMe ? '<span class="lb-me-tag">شما</span>' : ''}</span>
-            ${statusHtml}
+            <div style="display:flex; align-items:center; gap:6px; flex-wrap:wrap;">
+              ${statusHtml}
+              ${delBtnHtml}
+            </div>
           </div>
           <div class="lb-bar-track"><div class="lb-bar-fill" style="width:${r.pct}%"></div></div>
           <div class="lb-meta">
@@ -8445,7 +8643,7 @@ document.addEventListener('keydown', (e) => {
   if (tag === 'input' || tag === 'textarea') return;
 
   if (e.key === 'Escape') {
-    const modals = ['modal-lore', 'modal-confirm-reset', 'modal-guide', 'modal-creators', 'modal-leaderboard', 'modal-deck', 'modal-minimap', 'modal-settings', 'modal-station'];
+    const modals = ['modal-confirm-delete-guest', 'modal-lore', 'modal-confirm-reset', 'modal-guide', 'modal-creators', 'modal-leaderboard', 'modal-deck', 'modal-minimap', 'modal-settings', 'modal-station'];
     for (const id of modals) {
       const el = document.getElementById(id);
       if (el && el.classList.contains('open')) {
